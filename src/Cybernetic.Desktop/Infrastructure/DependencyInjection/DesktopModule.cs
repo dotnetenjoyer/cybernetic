@@ -1,5 +1,5 @@
-using Cybernetic.Desktop.MVVM.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using Cybernetic.Desktop.MVVM.Utils;
 
 namespace Cybernetic.Desktop.Infrastructure.DependencyInjection;
 
@@ -15,6 +15,7 @@ public class DesktopModule
     public static void Register(IServiceCollection services)
     {
         services.AddScoped<ViewModelFactory>();
+
+        InfrastructureModule.Register(services);
     }
 }
-

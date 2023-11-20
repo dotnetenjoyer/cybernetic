@@ -13,6 +13,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cybernetic.Desktop.MVVM\Cybernetic.Desktop.MVVM.csproj" />
+      <ProjectReference Include="..\Cybernetic.Domain\Cybernetic.Domain.csproj" />
+      <ProjectReference Include="..\Cybernetic.Infrastructure.Abstraction\Cybernetic.Infrastructure.Abstraction.csproj" />
+      <ProjectReference Include="..\Cybernetic.Infrastructure.Implementation\Cybernetic.Infrastructure.Implementation.csproj" />
+      <ProjectReference Include="..\Cybernetic.UseCases\Cybernetic.UseCases.csproj" />
     </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ public class Schedule
     /// </summary>
     public Schedule()
     {
-        Id = new Guid();
+        Id = Guid.NewGuid();
         layers = new List<Layer>();
     }
     

@@ -11,7 +11,7 @@ public class ScheduledTask
     /// <param name="name"></param>
     public ScheduledTask(string name, DateTime startTime, DateTime endTime)
     {
-        Id = new Guid();
+        Id = Guid.NewGuid();
         Name = name;
         StartTime = startTime;
         EndTime = endTime;

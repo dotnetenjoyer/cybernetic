@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Cybernetic.UseCases.Schedules.GenerateSchedule;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cybernetic.Desktop.Views
 {
@@ -23,6 +27,22 @@ namespace Cybernetic.Desktop.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            var compositionRoot = CompositionRoot.GetInstance();
+
+            var mediator = compositionRoot.ServiceProvider.GetRequiredService<IMediator>();
+
+            var command = new GenerateScheduleCommand()
+            {
+                MinLayersCount = 3,
+                MaxLayersCount = 3,
+                MinTasksCountPerLayer = 4,
+                MaxTasksCountPerLayer = 8,
+                StartTime = DateTime.Now.Date.AddDays(-5),
+                EndTime = DateTime.Now
+            };
+            
+            var schedule = mediator.Send(command).GetAwaiter().GetResult();
         }
     }
 }

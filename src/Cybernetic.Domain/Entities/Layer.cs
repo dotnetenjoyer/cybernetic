@@ -12,7 +12,7 @@ public class Layer
     /// </summary>
     public Layer()
     {
-        Id = new Guid();
+        Id = Guid.NewGuid();
         tasks = new List<ScheduledTask>();
     }
     
