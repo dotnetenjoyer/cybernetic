@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybernetic.Desktop", "Cybernetic.Desktop\Cybernetic.Desktop.csproj", "{969D3694-8E62-4748-A408-E0D3FAD50A0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybernetic.Domain", "Cybernetic.Domain\Cybernetic.Domain.csproj", "{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{0FDE0950-6CA4-4AF7-89D7-16D9E59B9553}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{12DC0129-6539-404F-B327-110903834A37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybernetic.Infrastructure.Abstraction", "Cybernetic.Infrastructure.Abstraction\Cybernetic.Infrastructure.Abstraction.csproj", "{22BD510D-2C91-4287-8188-D9CB980E486C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybernetic.UseCases", "Cybernetic.UseCases\Cybernetic.UseCases.csproj", "{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{EC61AC5E-9F7B-44AD-9073-DCCB30AB0AFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybernetic.Desktop.MVVM", "Cybernetic.Desktop.MVVM\Cybernetic.Desktop.MVVM.csproj", "{202E41F3-A26C-4352-BED7-1BBEA94423D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{969D3694-8E62-4748-A408-E0D3FAD50A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{969D3694-8E62-4748-A408-E0D3FAD50A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{969D3694-8E62-4748-A408-E0D3FAD50A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{969D3694-8E62-4748-A408-E0D3FAD50A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22BD510D-2C91-4287-8188-D9CB980E486C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22BD510D-2C91-4287-8188-D9CB980E486C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BD510D-2C91-4287-8188-D9CB980E486C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22BD510D-2C91-4287-8188-D9CB980E486C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{202E41F3-A26C-4352-BED7-1BBEA94423D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{202E41F3-A26C-4352-BED7-1BBEA94423D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{202E41F3-A26C-4352-BED7-1BBEA94423D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{202E41F3-A26C-4352-BED7-1BBEA94423D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA1EAE64-8AB5-45CB-A882-A0E40D09DDFF} = {0FDE0950-6CA4-4AF7-89D7-16D9E59B9553}
+		{969D3694-8E62-4748-A408-E0D3FAD50A0E} = {12DC0129-6539-404F-B327-110903834A37}
+		{22BD510D-2C91-4287-8188-D9CB980E486C} = {0FDE0950-6CA4-4AF7-89D7-16D9E59B9553}
+		{0DC06AF4-0C35-4138-87DC-39EAD0EAAF3A} = {0FDE0950-6CA4-4AF7-89D7-16D9E59B9553}
+		{202E41F3-A26C-4352-BED7-1BBEA94423D1} = {12DC0129-6539-404F-B327-110903834A37}
+	EndGlobalSection
+EndGlobal
