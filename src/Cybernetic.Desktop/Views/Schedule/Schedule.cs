@@ -8,6 +8,7 @@ namespace Cybernetic.Desktop.Views.Schedules;
 
 public class ScheduleControl : Canvas
 {
+    private const int RulerHeight = 50;
     private const int TaskElementHeight = 25;
     
     /// <summary>
@@ -44,24 +45,46 @@ public class ScheduleControl : Canvas
     {
         Children.Clear();
 
-        AddRuler();
-        AddLayers();
+        var stepWidth = TimeSpan.FromHours(1).Ticks * ScaleFactor;
+        var numberOfStepsInLargeStep = 5;
+        AddRuler(stepWidth, numberOfStepsInLargeStep);
+
+        var columnWidth = stepWidth * numberOfStepsInLargeStep;
+        AddGrid(columnWidth);
     }
 
-    private void AddRuler()
+    private void AddRuler(double stepWidth, int numberOfStepsInLargeStep)
     {
         var ruler = new Ruler
         {
             Label = Schedule.StartTime.ToString("dddd, dd MMMM yyyy"),
-            StepWidth = TimeSpan.FromHours(1).Ticks * ScaleFactor,
-            NumberOfStepsInLargeStep = 5,
+            StepWidth = stepWidth,
+            NumberOfStepsInLargeStep = numberOfStepsInLargeStep,
             Width = Width,
-            Height = 50,
+            Height = RulerHeight,
             Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#adafb3"),
             MarkupBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#363637")
         };
         
         Children.Add(ruler);
+    }
+
+    private void AddGrid(double columnWidth)
+    {
+        var grid = new ScheduleGrid
+        {
+            Width = Width,
+            Height = ActualHeight - RulerHeight,
+            RowHeight = TaskElementHeight,
+            ColumnWidth = columnWidth,
+            FirstRowBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#9ca3ad"),
+            SecondRowBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#a8b2bf"),
+            ColumnBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#898f96")
+        };
+        
+        SetTop(grid, RulerHeight);
+
+        Children.Add(grid);
     }
     
     private void AddLayers()
