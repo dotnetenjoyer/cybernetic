@@ -13,7 +13,7 @@ public class CompositionRoot
 
     public IServiceProvider ServiceProvider { get; private set; }
     
-    /// <summary>
+    /// <summary> 
     /// Returns instance of <see cref="CompositionRoot"/>.
     /// </summary>
     /// <returns></returns>

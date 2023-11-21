@@ -24,9 +24,12 @@ public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCo
     /// <inheritdoc />
     public Task<Schedule> Handle(GenerateScheduleCommand command, CancellationToken cancellationToken)
     {
-        ValidateCommand(command);
-        var schedule = GenerateSchedule(command);
+        var schedule = GenerateTestSchedule();
         return Task.FromResult(schedule);
+        
+        // ValidateCommand(command);
+        // var schedule = GenerateSchedule(command);
+        // return Task.FromResult(schedule);
     }
 
     private void ValidateCommand(GenerateScheduleCommand command)
@@ -94,5 +97,24 @@ public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCo
         
         var task = new ScheduledTask(taskName, taskStartTime, taskEndTime);
         return task;
+    }
+
+    private Schedule GenerateTestSchedule()
+    {
+        var schedule = new Schedule();
+
+        var layer = new Layer();
+        schedule.AddLayer(layer);
+        
+        layer.AddTask(new ScheduledTask("First task", DateTime.Now.Date.AddDays(-2), DateTime.Now.Date.AddDays(-1)));
+        layer.AddTask(new ScheduledTask("Second task", DateTime.Now.Date.AddDays(-1), DateTime.Now.Date));
+        layer.AddTask(new ScheduledTask("Third task", DateTime.Now.Date, DateTime.Now.Date.AddDays(1)));
+
+        var layer2 = new Layer();
+        schedule.AddLayer(layer2);
+        
+        layer2.AddTask(new ScheduledTask("#1 task", DateTime.Now.AddDays(-1), DateTime.Now));
+
+        return schedule;
     }
 }

@@ -24,7 +24,7 @@ public class Layer
     /// <summary>
     /// Layer related tasks.
     /// </summary>
-    public IEnumerable<ScheduledTask> Tasks => tasks;
+    public IReadOnlyCollection<ScheduledTask> Tasks => tasks;
 
     /// <summary>
     /// Add a new task to layer.
