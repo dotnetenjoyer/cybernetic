@@ -77,14 +77,20 @@ public class ScheduleGrid : Canvas
     public ScheduleGrid()
     {
         Loaded += HandleLoaded;
+        SizeChanged += HandleSizeChange;
     }
 
     private void HandleLoaded(object? sender, RoutedEventArgs args)
     {
-        AddMarkup();
+        RenderMarkup();
     }
 
-    private void AddMarkup()
+    private void HandleSizeChange(object? sender, RoutedEventArgs args)
+    {
+        RenderMarkup();
+    }
+    
+    private void RenderMarkup()
     {
         Children.Clear();
 

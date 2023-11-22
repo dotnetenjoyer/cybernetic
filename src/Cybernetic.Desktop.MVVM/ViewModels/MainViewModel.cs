@@ -49,12 +49,12 @@ public class MainViewModel : BaseViewModel
     {
         var generateCommand = new GenerateScheduleCommand
         {
-            MinLayersCount = 3,
-            MaxLayersCount = 3,
+            MinLayersCount = 10,
+            MaxLayersCount = 10,
             MinTasksCountPerLayer = 4,
-            MaxTasksCountPerLayer = 8,
-            StartTime = DateTime.Now.Date.AddDays(-1),
-            EndTime = DateTime.Now.AddDays(1)
+            MaxTasksCountPerLayer = 20,
+            StartTime = DateTime.Now.Date.AddDays(-4),
+            EndTime = DateTime.Now.AddDays(2)
         };
 
         var schedule = await mediator.Send(generateCommand);    
