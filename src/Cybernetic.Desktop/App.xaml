@@ -4,6 +4,45 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Startup="ApplicationStartup">
     <Application.Resources>
-        
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="RulerBackground" Color="#adafb3"/>
+            <SolidColorBrush x:Key="RulerMarkupBrush" Color="#363637"/>
+            
+            <SolidColorBrush x:Key="RibbonBackground" Color="#bdc1c7"/>
+            
+            <SolidColorBrush x:Key="ButtonBackground" Color="#848b99"/>
+            <SolidColorBrush x:Key="ButtonHoverBackground" Color="#5c5c5c"/>
+            <SolidColorBrush x:Key="ButtonHoverForeground" Color="#c7c7c7"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#757b87"/>
+            
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ButtonBackground}"/> 
+                <Setter Property="Foreground" Value="White"/> 
+                <Setter Property="Height" Value="18"/> 
+                <Setter Property="Padding" Value="10 0"/> 
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                CornerRadius="2"
+                                BorderThickness="2"
+                                Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource ButtonHoverBackground}"/>
+                        <Setter Property="Foreground" Value="{StaticResource ButtonHoverForeground}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -5,17 +5,8 @@ namespace Cybernetic.Domain.Entities;
 /// </summary>
 public class Layer
 {
-    private List<ScheduledTask> tasks;
+    private readonly List<ScheduledTask> tasks;
 
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public Layer()
-    {
-        Id = Guid.NewGuid();
-        tasks = new List<ScheduledTask>();
-    }
-    
     /// <summary>
     /// Layer ID.
     /// </summary>
@@ -27,12 +18,32 @@ public class Layer
     public IReadOnlyCollection<ScheduledTask> Tasks => tasks;
 
     /// <summary>
+    /// Occurs when adding a task to a layer.
+    /// </summary>
+    public event Action<ScheduledTask> TaskAdded;
+
+    /// <summary>
+    /// Occurs when removing a task from a layer.
+    /// </summary>
+    public event Action<ScheduledTask> TaskRemoved;
+    
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public Layer()
+    {
+        Id = Guid.NewGuid();
+        tasks = new List<ScheduledTask>();
+    }
+    
+    /// <summary>
     /// Add a new task to layer.
     /// </summary>
     /// <param name="task">Task to add.</param>
     public void AddTask(ScheduledTask task)
     {
         tasks.Add(task);
+        TaskAdded?.Invoke(task);
     }
 
     /// <summary>
@@ -41,6 +52,10 @@ public class Layer
     /// <param name="task">Task to remove.</param>
     public void RemoveTask(ScheduledTask task)
     {
-        tasks.Remove(task);
+        var result = tasks.Remove(task);
+        if (result)
+        {
+            TaskRemoved?.Invoke(task);
+        }
     }
 }

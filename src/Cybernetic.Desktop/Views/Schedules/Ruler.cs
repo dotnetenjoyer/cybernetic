@@ -77,7 +77,6 @@ public class Ruler : Canvas
         
         AddLabel();
         AddHashMarks();
-        AddBorder();
     }
 
     private void AddLabel()
@@ -149,19 +148,5 @@ public class Ruler : Canvas
         SetLeft(label, StepWidth * hashMarkIndex + labelOffsetX);
         SetTop(label, Height + labelOffsetY);
         Children.Add(label);             
-    }
-
-    private void AddBorder()
-    {
-        var border = new Rectangle
-        {
-            Height = 1,
-            Width = ActualWidth,
-            Stroke = MarkupBrush,
-        };
-        
-        SetTop(border, ActualHeight - 1);
-        
-        Children.Add(border);
     }
 }

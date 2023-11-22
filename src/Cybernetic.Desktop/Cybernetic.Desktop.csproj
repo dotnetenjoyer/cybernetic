@@ -20,4 +20,21 @@
       <ProjectReference Include="..\Cybernetic.UseCases\Cybernetic.UseCases.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Resources\Images\completed.svg" />
+      <None Remove="Resources\Images\error.svg" />
+      <None Remove="Resources\Images\warning.png" />
+      <Resource Include="Resources\Images\warning.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\Images\error.png" />
+      <Resource Include="Resources\Images\error.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\Images\completed.png" />
+      <Resource Include="Resources\Images\completed.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
 </Project>

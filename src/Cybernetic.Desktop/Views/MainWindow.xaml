@@ -4,30 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:Cybernetic.Desktop.Views"
-    xmlns:entities="clr-namespace:Cybernetic.Domain.Entities;assembly=Cybernetic.Domain"
-    xmlns:schedule="clr-namespace:Cybernetic.Desktop.Views.Schedules"
+    xmlns:schedules="clr-namespace:Cybernetic.Desktop.Views.Schedules"
     xmlns:vm="clr-namespace:Cybernetic.Desktop.MVVM.ViewModels;assembly=Cybernetic.Desktop.MVVM"
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     mc:Ignorable="d"
     Title="Cybernetic" 
     Height="450" Width="800">
     <Grid>
-        <!-- <ScrollViewer> -->
-        <!--     <StackPanel Orientation="Vertical"> -->
-        <!--         <ItemsControl ItemsSource="{Binding Schedule.Layers}"> -->
-        <!--             <ItemsControl.ItemTemplate> -->
-        <!--                  -->
-        <!--             </ItemsControl.ItemTemplate>                 -->
-        <!--         </ItemsControl> -->
-        <!--     </StackPanel> -->
-        <!-- </ScrollViewer> -->
-        
-        <ScrollViewer HorizontalAlignment="Stretch"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto"
-                      VerticalAlignment="Stretch">
-            <schedule:ScheduleControl Schedule="{Binding Schedule}"/>
-        </ScrollViewer>
+        <schedules:ScheduleControl DataContext="{Binding ScheduleViewModel}"/>
     </Grid>
 </Window>

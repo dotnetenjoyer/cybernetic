@@ -1,8 +1,4 @@
-using System.Windows.Input;
-using MediatR;
-using Cybernetic.Domain.Entities;
-using Cybernetic.UseCases.Schedules.GenerateSchedule;
-using Microsoft.Toolkit.Mvvm.Input;
+using Cybernetic.Desktop.MVVM.Utils;
 
 namespace Cybernetic.Desktop.MVVM.ViewModels;
 
@@ -11,53 +7,22 @@ namespace Cybernetic.Desktop.MVVM.ViewModels;
 /// </summary>
 public class MainViewModel : BaseViewModel
 {
-    private readonly IMediator mediator;
+    /// <summary>
+    /// Schedule view model.
+    /// </summary>
+    public ScheduleViewModel ScheduleViewModel { get; }
     
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="mediator"></param>
-    public MainViewModel(IMediator mediator)
+    public MainViewModel(ViewModelFactory viewModelFactory)
     {
-        this.mediator = mediator;
-
-        GenerateScheduleCommand = new RelayCommand(() => GenerateScheduleAsync());
+        ScheduleViewModel = viewModelFactory.Create<ScheduleViewModel>();
     }
 
-    /// <summary>
-    /// Schedule.
-    /// </summary>
-    public Schedule Schedule
-    {
-        get => schedule; 
-        set => SetProperty(ref schedule, value);
-    }
-
-    private Schedule schedule;
-    
-    /// <summary>
-    /// Command to generate schedule.
-    /// </summary>
-    public ICommand GenerateScheduleCommand { get; }
-
+    /// <inheritdoc />
     public override Task LoadAsync()
     {
-        return GenerateScheduleAsync();
-    }
-
-    private async Task GenerateScheduleAsync()
-    {
-        var generateCommand = new GenerateScheduleCommand
-        {
-            MinLayersCount = 10,
-            MaxLayersCount = 10,
-            MinTasksCountPerLayer = 4,
-            MaxTasksCountPerLayer = 20,
-            StartTime = DateTime.Now.Date.AddDays(-4),
-            EndTime = DateTime.Now.AddDays(2)
-        };
-
-        var schedule = await mediator.Send(generateCommand);    
-        Schedule = schedule;
+        return ScheduleViewModel.LoadAsync();
     }
 }

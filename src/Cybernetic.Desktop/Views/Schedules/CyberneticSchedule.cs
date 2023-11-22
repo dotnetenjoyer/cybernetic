@@ -8,7 +8,7 @@ using Cybernetic.Domain.Entities;
 
 namespace Cybernetic.Desktop.Views.Schedules;
 
-public class ScheduleControl : Canvas
+public class CyberneticSchedule : Canvas
 {
     private const int RulerHeight = 50;
     private const int TaskElementHeight = 22;
@@ -29,16 +29,16 @@ public class ScheduleControl : Canvas
 
     private static readonly DependencyProperty ScheduleProperty = DependencyProperty
         .Register(nameof(Schedule), typeof(Schedule),
-            typeof(ScheduleControl), new PropertyMetadata(OnScheduleChanged));
+            typeof(CyberneticSchedule), new PropertyMetadata(OnScheduleChanged));
 
     private static void OnScheduleChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
         var schedule = (Schedule)args.NewValue;
-        var scheduleControl = (ScheduleControl)obj;
+        var scheduleControl = (CyberneticSchedule)obj;
 
-        if (scheduleControl != null)
+        if (scheduleControl != null && schedule.Duration.HasValue)
         {
-            scheduleControl.Width = schedule.Duration.Ticks * ScaleFactor;
+            scheduleControl.Width = schedule.Duration.Value.Ticks * ScaleFactor;
             scheduleControl.AddScheduleElements();
         }
     }
@@ -56,7 +56,7 @@ public class ScheduleControl : Canvas
 
     private static readonly DependencyProperty PresentLineFillBrushProperty = DependencyProperty
         .Register(nameof(PresentLineFillBrush), typeof(Brush), 
-            typeof(ScheduleControl), new PropertyMetadata(Brushes.Yellow));
+            typeof(CyberneticSchedule), new PropertyMetadata(Brushes.Yellow));
 
     /// <summary>
     /// Present line fill brush.
@@ -69,7 +69,7 @@ public class ScheduleControl : Canvas
     
     private static readonly DependencyProperty PresentLineStrokeBrushProperty = DependencyProperty
         .Register(nameof(PresentLineStrokeBrush), typeof(Brush), 
-            typeof(ScheduleControl), new PropertyMetadata(Brushes.Black));
+            typeof(CyberneticSchedule), new PropertyMetadata(Brushes.Black));
 
     /// <summary>
     /// Present line stroke brush.
@@ -85,7 +85,7 @@ public class ScheduleControl : Canvas
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ScheduleControl()
+    public CyberneticSchedule()
     {
         SizeChanged += HandleSizeChange;
     }
@@ -130,13 +130,13 @@ public class ScheduleControl : Canvas
     {
         var ruler = new Ruler
         {
-            Label = Schedule.StartTime.ToString("dddd, dd MMMM yyyy"),
+            Label = Schedule.StartTime.Value.ToString("dddd, dd MMMM yyyy"),
             StepWidth = stepWidth,
             NumberOfStepsInLargeStep = numberOfStepsInLargeStep,
             Width = Width,
             Height = RulerHeight,
-            Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#adafb3"),
-            MarkupBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#363637")
+            Background = (Brush)FindResource("RulerBackground"),
+            MarkupBrush = (Brush)FindResource("RulerMarkupBrush")
         };
         
         Children.Add(ruler);
@@ -147,7 +147,7 @@ public class ScheduleControl : Canvas
         scheduleGrid = new ScheduleGrid
         {
             Width = Width,
-            Height = ActualHeight - RulerHeight,
+            Height = ActualHeight - RulerHeight - RowHeight,
             RowHeight = RowHeight,
             ColumnWidth = columnWidth,
             FirstRowBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#9ca3ad"),
@@ -155,7 +155,7 @@ public class ScheduleControl : Canvas
             ColumnBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#898f96")
         };
         
-        SetTop(scheduleGrid, RulerHeight);
+        SetTop(scheduleGrid, RulerHeight + RowHeight);
         
         Children.Add(scheduleGrid);
     }
@@ -188,7 +188,7 @@ public class ScheduleControl : Canvas
         }
 
         var timeOffset = DateTime.Now - Schedule.StartTime;
-        var positionOffset = timeOffset.Ticks * ScaleFactor;
+        var positionOffset = timeOffset.Value.Ticks * ScaleFactor;
         SetLeft(presentLine, positionOffset);
     }
     
@@ -207,9 +207,10 @@ public class ScheduleControl : Canvas
                 taskControl.Width = taskPeriod.Ticks * ScaleFactor;
                 taskControl.DataContext = task;
                 
-                var left = (task.StartTime - Schedule.StartTime).Ticks * ScaleFactor;
+                
+                var left = (task.StartTime - Schedule.StartTime.Value).Ticks * ScaleFactor;
                 SetLeft(taskControl, left);
-                SetTop(taskControl, 50 + layerIndex * RowHeight + 2);
+                SetTop(taskControl, RulerHeight + RowHeight + layerIndex * RowHeight + 2);
                 
                 Children.Add(taskControl);
                 taskIndex++;

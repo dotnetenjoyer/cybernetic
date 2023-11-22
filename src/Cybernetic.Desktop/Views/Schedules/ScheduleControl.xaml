@@ -1,0 +1,28 @@
+<UserControl 
+    x:Class="Cybernetic.Desktop.Views.Schedules.ScheduleControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Cybernetic.Desktop.Views.Schedules"
+    xmlns:vm="clr-namespace:Cybernetic.Desktop.MVVM.ViewModels;assembly=Cybernetic.Desktop.MVVM"
+    d:DataContext="{d:DesignInstance Type=vm:ScheduleViewModel}"
+    mc:Ignorable="d">
+    <Grid Background="{StaticResource RulerBackground}">
+        <ScrollViewer 
+            HorizontalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto"
+            VerticalAlignment="Stretch">
+            <local:CyberneticSchedule Schedule="{Binding Schedule}"/>
+        </ScrollViewer>
+        
+        <local:ScheduleRibbon 
+            Grid.ZIndex="1" 
+            Height="25" 
+            Schedule="{Binding Schedule}"
+            GenerateScheduleCommand="{Binding GenerateScheduleCommand}"
+            VerticalAlignment="Top" 
+            Margin="0 50 0 0"/>
+    </Grid>
+</UserControl>
