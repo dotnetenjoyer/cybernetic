@@ -47,6 +47,11 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            
+            <Style TargetType="TextBlock">
+                <Setter Property="TextWrapping" Value="NoWrap"/>
+                <Setter Property="TextTrimming" Value="WordEllipsis"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

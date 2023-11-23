@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,36 +10,83 @@ namespace Cybernetic.Desktop.Views.Schedules;
 
 public class CyberneticSchedule : Canvas
 {
-    private const int RulerHeight = 50;
-    private const int TaskElementHeight = 22;
-    private const int RowHeight = 25;
+    #region DependencyProperties
 
-    private const int PresentLineZIndex = 100;
-    private const int PresentLineUpdatePeriod = 1000;
-    
-    private ScheduleGrid? scheduleGrid;
-    
-    private Rectangle? presentLine;
-    private Timer? presentLineUpdateTimer;
-    
+    private static readonly DependencyProperty RulerHeightProperty = DependencyProperty
+        .Register(nameof(RulerHeight), typeof(int), 
+            typeof(CyberneticSchedule), new PropertyMetadata(50));
+
     /// <summary>
-    /// Scale factor. A distance of 500 relative units contains 1 task lasting 1 day.
+    /// Schedule ruler height.
     /// </summary>
-    private static readonly double ScaleFactor = (double)500 / TimeSpan.FromDays(1).Ticks;
+    public int RulerHeight
+    {
+        get => (int)GetValue(RulerHeightProperty); 
+        set => SetValue(RulerHeightProperty, value);
+    }
+    
+    private static readonly DependencyProperty RibbonHeightProperty = DependencyProperty
+        .Register(nameof(RibbonHeight), typeof(int), 
+            typeof(CyberneticSchedule), new PropertyMetadata(25));
 
+    /// <summary>
+    /// Schedule ribbon height.
+    /// </summary>
+    public int RibbonHeight
+    {
+        get => (int)GetValue(RibbonHeightProperty); 
+        set => SetValue(RibbonHeightProperty, value);
+    }
+    
+    private static readonly DependencyProperty GridRowHeightProperty = DependencyProperty
+        .Register(nameof(GridRowHeight), typeof(int), 
+            typeof(CyberneticSchedule), new PropertyMetadata(25));
+
+    /// <summary>
+    /// Grid row height.
+    /// </summary>
+    public int GridRowHeight
+    {
+        get => (int)GetValue(GridRowHeightProperty); 
+        set => SetValue(GridRowHeightProperty, value);
+    }
+    
+    private static readonly DependencyProperty ShortestTaskWidthProperty = DependencyProperty
+        .Register(nameof(ShortestTaskWidth), typeof(double), 
+            typeof(CyberneticSchedule), new PropertyMetadata((double)30));
+
+    /// <summary>
+    /// Width of shortest scheduled task.
+    /// </summary>
+    public double ShortestTaskWidth
+    {
+        get => (double)GetValue(ShortestTaskWidthProperty); 
+        set => SetValue(ShortestTaskWidthProperty, value);
+    }
+
+    private static readonly DependencyProperty TaskHeightProperty = DependencyProperty
+        .Register(nameof(TaskHeight), typeof(int), 
+            typeof(CyberneticSchedule), new PropertyMetadata(22));
+
+    /// <summary>
+    /// Task element heights.
+    /// </summary>
+    public int TaskHeight
+    {
+        get => (int)GetValue(TaskHeightProperty); 
+        set => SetValue(TaskHeightProperty, value);
+    }
+    
     private static readonly DependencyProperty ScheduleProperty = DependencyProperty
         .Register(nameof(Schedule), typeof(Schedule),
             typeof(CyberneticSchedule), new PropertyMetadata(OnScheduleChanged));
 
     private static void OnScheduleChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
     {
-        var schedule = (Schedule)args.NewValue;
-        var scheduleControl = (CyberneticSchedule)obj;
-
-        if (scheduleControl != null && schedule.Duration.HasValue)
+        var control = (CyberneticSchedule)obj;
+        if (control != null)
         {
-            scheduleControl.Width = schedule.Duration.Value.Ticks * ScaleFactor;
-            scheduleControl.AddScheduleElements();
+            control.DrawSchedule();
         }
     }
     
@@ -52,8 +98,6 @@ public class CyberneticSchedule : Canvas
         get => (Schedule)GetValue(ScheduleProperty);
         set => SetValue(ScheduleProperty, value);
     }
-
-    #region PresentLineProperties
 
     private static readonly DependencyProperty PresentLineFillBrushProperty = DependencyProperty
         .Register(nameof(PresentLineFillBrush), typeof(Brush), 
@@ -80,9 +124,19 @@ public class CyberneticSchedule : Canvas
         get => (Brush)GetValue(PresentLineStrokeBrushProperty);
         set => SetValue(PresentLineStrokeBrushProperty, value);
     }
-
+    
     #endregion
+    
+    private const int PresentLineZIndex = 100;
+    private const int PresentLineUpdatePeriod = 1000;
 
+    private ScheduleGrid? scheduleGrid;
+    
+    private Rectangle? presentLine;
+    private Timer? presentLineUpdateTimer;
+
+    private double scaleFactor = 1;
+    
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -96,7 +150,7 @@ public class CyberneticSchedule : Canvas
         if (scheduleGrid != null)
         {
             scheduleGrid.Height = ActualHeight - RulerHeight;
-            scheduleGrid.Width = ActualWidth;                
+            scheduleGrid.Width = Width;                
         }
 
         if (presentLine != null)
@@ -104,40 +158,55 @@ public class CyberneticSchedule : Canvas
             presentLine.Height = ActualHeight;
         }
     }
-
-    private void AddScheduleElements()
+    
+    private void DrawSchedule()
     {
-        if (Schedule == null)
+        Children.Clear();
+        
+        if (Schedule == null || Schedule.Duration == null)
         {
             return;
         }
-        
-        Children.Clear();
 
-        var stepWidth = TimeSpan.FromHours(1).Ticks * ScaleFactor;
+        CalculateScaleFactor();
+        CalculateWidth();
+        
+        AddRulerAndGrid();
+        AddPresentLine();
+        AddLayers();
+    }
+
+    private void CalculateScaleFactor()
+    {
+        scaleFactor = ShortestTaskWidth / Schedule.ShortestTaskDuration.Value.Ticks;
+    }
+
+    private void CalculateWidth()
+    {
+        Width = Schedule.Duration.Value.Ticks * scaleFactor;
+    }
+
+    private void AddRulerAndGrid()
+    {
+        var stepWidth = TimeSpan.FromHours(1).Ticks * scaleFactor;
         var numberOfStepsInLargeStep = 5;
         AddRuler(stepWidth, numberOfStepsInLargeStep);
 
         var columnWidth = stepWidth * numberOfStepsInLargeStep;
         AddGrid(columnWidth);
-        
-        AddPresentLine();
-        UpdatePresentLinePosition();
-        
-        AddLayers();
     }
 
     private void AddRuler(double stepWidth, int numberOfStepsInLargeStep)
     {
         var ruler = new Ruler
         {
-            Label = Schedule.StartTime.Value.ToString("dddd, dd MMMM yyyy"),
-            StepWidth = stepWidth,
-            NumberOfStepsInLargeStep = numberOfStepsInLargeStep,
             Width = Width,
             Height = RulerHeight,
             Background = (Brush)FindResource("RulerBackground"),
-            MarkupBrush = (Brush)FindResource("RulerMarkupBrush")
+            MarkupBrush = (Brush)FindResource("RulerMarkupBrush"),
+            Label = Schedule.StartTime.Value.ToString("dddd, dd MMMM yyyy"),
+            StepWidth = stepWidth,
+            NumberOfStepsInLargeStep = numberOfStepsInLargeStep,
         };
         
         Children.Add(ruler);
@@ -145,19 +214,20 @@ public class CyberneticSchedule : Canvas
 
     private void AddGrid(double columnWidth)
     {
+        var yAxisOffset = RulerHeight + RibbonHeight;
+        
         scheduleGrid = new ScheduleGrid
         {
             Width = Width,
-            Height = ActualHeight - RulerHeight - RowHeight,
-            RowHeight = RowHeight,
+            Height = ActualHeight - yAxisOffset,
+            RowHeight = GridRowHeight,
             ColumnWidth = columnWidth,
             FirstRowBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#9ca3ad"),
             SecondRowBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#a8b2bf"),
             ColumnBackground = (SolidColorBrush)new BrushConverter().ConvertFrom("#898f96")
         };
-        
-        SetTop(scheduleGrid, RulerHeight + RowHeight);
-        
+
+        SetTop(scheduleGrid, yAxisOffset);
         Children.Add(scheduleGrid);
     }
 
@@ -178,7 +248,7 @@ public class CyberneticSchedule : Canvas
         presentLineUpdateTimer = new Timer(state =>
         {
             Application.Current.Dispatcher.Invoke(UpdatePresentLinePosition);
-        }, null, PresentLineUpdatePeriod, PresentLineUpdatePeriod);
+        }, null, 0, PresentLineUpdatePeriod);
     }
 
     private void UpdatePresentLinePosition()
@@ -189,46 +259,51 @@ public class CyberneticSchedule : Canvas
         }
 
         var timeOffset = DateTime.Now - Schedule.StartTime;
-        var positionOffset = timeOffset.Value.Ticks * ScaleFactor;
+        var positionOffset = timeOffset.Value.Ticks * scaleFactor;
         SetLeft(presentLine, positionOffset);
     }
     
     private void AddLayers()
     {
-        var index = 0;
+        var layerIndex = 0;
         foreach (var layer in Schedule.Layers)
         {
-            AddLayer(layer, index);
-            index++;
+            AddLayer(layer, layerIndex);
+            layerIndex++;
         }
     }
 
     private void AddLayer(Layer layer, int layerIndex)
     {
+        const int rowOffset = 2;
+        
         var layerCanvas = new Canvas
         {
-            Height = RowHeight,
+            Height = GridRowHeight,
             Width = ActualWidth
         };
 
-        SetTop(layerCanvas, RulerHeight + RowHeight + RowHeight * layerIndex + 2);
-        
         int taskIndex = 0;
         foreach (var task in layer.Tasks)
         {
-            var taskControl = new ScheduleTaskControl
-            {
-                Height = TaskElementHeight,
-                Width = (task.EndTime - task.StartTime).Ticks * ScaleFactor,
-                DataContext = task
-            };
-            
-            SetLeft(taskControl, (task.StartTime - Schedule.StartTime.Value).Ticks * ScaleFactor);
-            
-            layerCanvas.Children.Add(taskControl);
+            AddTask(task, layerCanvas);
             taskIndex++;
         }
 
+        SetTop(layerCanvas, RulerHeight + RibbonHeight + GridRowHeight * layerIndex + rowOffset);
         Children.Add(layerCanvas);
+    }
+
+    private void AddTask(ScheduledTask task, Canvas layer)
+    {
+        var taskControl = new ScheduleTaskControl
+        {
+            Height = TaskHeight,
+            Width = (task.EndTime - task.StartTime).Ticks * scaleFactor,
+            DataContext = task
+        };
+            
+        SetLeft(taskControl, (task.StartTime - Schedule.StartTime.Value).Ticks * scaleFactor);
+        layer.Children.Add(taskControl);
     }
 }

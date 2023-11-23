@@ -5,7 +5,7 @@ namespace Cybernetic.Domain.Entities;
 /// </summary>
 public class Schedule
 {
-    private List<Layer> layers;
+    private readonly List<Layer> layers;
 
     /// <summary>
     /// Schedule ID.
@@ -26,12 +26,17 @@ public class Schedule
     /// Schedule end time.
     /// </summary>
     public DateTime? EndTime { get; private set; }
-
+    
     /// <summary>
     /// Schedule duration.
     /// </summary>
     public TimeSpan? Duration => EndTime - StartTime;
 
+    /// <summary>
+    /// Duration of the shortest scheduled task.
+    /// </summary>
+    public TimeSpan? ShortestTaskDuration { get; private set; }
+    
     /// <summary>
     /// Number of pending tasks.
     /// </summary>
@@ -99,25 +104,50 @@ public class Schedule
     private void UpdateTasksRelatedProperties()
     {
         StartTime = EndTime = default;
+        ShortestTaskDuration = default;
         PendingTasksNumber = ErrorTasksNumber = CompletedTasksNumber = default;
         
         var tasks = layers
             .SelectMany(l => l.Tasks)
             .ToList();
         
-        var times = tasks
-            .SelectMany(t => new[] { t.StartTime, t.EndTime })
-            .ToList();
-
         if (!tasks.Any())
         {
             return;
         }
-        
-        StartTime = times.Min();
-        EndTime = times.Max();
 
+        CalculateScheduleTimes(tasks);
         CalculateTasksNumbersByStatus(tasks);
+    }
+
+    private void CalculateScheduleTimes(IEnumerable<ScheduledTask> tasks)
+    {
+        var startTime = DateTime.MaxValue;
+        var endTime = DateTime.MinValue;
+        var shortestTaskDuration = TimeSpan.MaxValue;
+        
+        foreach (var task in tasks)
+        {
+            var taskDuration = task.EndTime - task.StartTime;
+            if (shortestTaskDuration > taskDuration)
+            {
+                shortestTaskDuration = taskDuration;
+            }
+
+            if (endTime < task.EndTime)
+            {
+                endTime = task.EndTime;
+            }
+
+            if (startTime > task.StartTime)
+            {
+                startTime = task.StartTime;
+            }
+        }
+
+        StartTime = startTime;
+        EndTime = endTime;
+        ShortestTaskDuration = shortestTaskDuration;
     }
 
     private void CalculateTasksNumbersByStatus(IEnumerable<ScheduledTask> tasks)
