@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -194,29 +195,40 @@ public class CyberneticSchedule : Canvas
     
     private void AddLayers()
     {
-        int layerIndex = 0;
+        var index = 0;
         foreach (var layer in Schedule.Layers)
         {
-            int taskIndex = 0;
-            foreach (var task in layer.Tasks)
-            {
-                var taskPeriod = task.EndTime - task.StartTime;
-
-                var taskControl = new ScheduleTaskControl();
-                taskControl.Height = TaskElementHeight;
-                taskControl.Width = taskPeriod.Ticks * ScaleFactor;
-                taskControl.DataContext = task;
-                
-                
-                var left = (task.StartTime - Schedule.StartTime.Value).Ticks * ScaleFactor;
-                SetLeft(taskControl, left);
-                SetTop(taskControl, RulerHeight + RowHeight + layerIndex * RowHeight + 2);
-                
-                Children.Add(taskControl);
-                taskIndex++;
-            }
-
-            layerIndex++;
+            AddLayer(layer, index);
+            index++;
         }
+    }
+
+    private void AddLayer(Layer layer, int layerIndex)
+    {
+        var layerCanvas = new Canvas
+        {
+            Height = RowHeight,
+            Width = ActualWidth
+        };
+
+        SetTop(layerCanvas, RulerHeight + RowHeight + RowHeight * layerIndex + 2);
+        
+        int taskIndex = 0;
+        foreach (var task in layer.Tasks)
+        {
+            var taskControl = new ScheduleTaskControl
+            {
+                Height = TaskElementHeight,
+                Width = (task.EndTime - task.StartTime).Ticks * ScaleFactor,
+                DataContext = task
+            };
+            
+            SetLeft(taskControl, (task.StartTime - Schedule.StartTime.Value).Ticks * ScaleFactor);
+            
+            layerCanvas.Children.Add(taskControl);
+            taskIndex++;
+        }
+
+        Children.Add(layerCanvas);
     }
 }

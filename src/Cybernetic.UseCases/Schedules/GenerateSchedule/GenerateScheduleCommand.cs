@@ -9,15 +9,15 @@ namespace Cybernetic.UseCases.Schedules.GenerateSchedule;
 public class GenerateScheduleCommand : IRequest<Schedule>
 {
     /// <summary>
-    /// Maximum number of layers.
-    /// </summary>
-    public int MaxLayersCount { get; set; } = 1;
-    
-    /// <summary>
     /// Minimum number of layers.
     /// </summary>
     public int MinLayersCount { get; set; } = 1;
     
+    /// <summary>
+    /// Maximum number of layers.
+    /// </summary>
+    public int MaxLayersCount { get; set; } = 1;
+
     /// <summary>
     /// Minimum number of tasks in layer.
     /// </summary>
@@ -37,4 +37,9 @@ public class GenerateScheduleCommand : IRequest<Schedule>
     /// Schedule end time.
     /// </summary>
     public DateTime EndTime { get; set; }
+
+    /// <summary>
+    /// Minimum task duration.
+    /// </summary>
+    public TimeSpan MinTaskDuration { get; set; } = TimeSpan.FromHours(1);
 }

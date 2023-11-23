@@ -8,32 +8,30 @@
     d:DataContext="{d:DesignInstance Type=entities:ScheduledTask}"
     xmlns:local="clr-namespace:Cybernetic.Desktop.Views.Schedules"
     mc:Ignorable="d">
-    <Border BorderBrush="Black" BorderThickness="1">
-        <StackPanel>
-            <StackPanel.Style>
-                <Style>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Status}" Value="Pending">
-                            <Setter Property="StackPanel.Background" Value="#c79300"/>
-                            <Setter Property="TextBlock.Foreground" Value="White"/>
-                        </DataTrigger>
+    <Border>
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="2"/>
+                <Setter Property="Padding" Value="5 0 0 0"/>
+                    
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Status}" Value="Pending">
+                        <Setter Property="StackPanel.Background" Value="{StaticResource PendingTaskBackground}"/>
+                    </DataTrigger>
             
-                        <DataTrigger Binding="{Binding Status}" Value="Completed">
-                            <Setter Property="StackPanel.Background" Value="#50a31d"/>
-                            <Setter Property="TextBlock.Foreground" Value="White"/>
-                        </DataTrigger>
+                    <DataTrigger Binding="{Binding Status}" Value="Completed">
+                        <Setter Property="StackPanel.Background" Value="{StaticResource CompletedTaskBackground}"/>
+                    </DataTrigger>
             
-                        <DataTrigger Binding="{Binding Status}" Value="Error">
-                            <Setter Property="StackPanel.Background" Value="#cd0000"/>
-                            <Setter Property="TextBlock.Foreground" Value="White"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-        
-            <Border Padding="5 0 0 0">
-                <TextBlock Text="{Binding Name}" FontSize="12"/>    
-            </Border>
-        </StackPanel>
+                    <DataTrigger Binding="{Binding Status}" Value="Error">
+                        <Setter Property="StackPanel.Background" Value="{StaticResource ErrorTaskBackground}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <TextBlock Text="{Binding Name}" FontSize="12" Foreground="White"/>    
     </Border>
 </UserControl>

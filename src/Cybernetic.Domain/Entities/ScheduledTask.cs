@@ -8,13 +8,17 @@ public class ScheduledTask
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="name"></param>
-    public ScheduledTask(string name, DateTime startTime, DateTime endTime)
+    /// <param name="name">Task name.</param>
+    /// <param name="startTime">Start time.</param>
+    /// <param name="endTime">End time.</param>
+    /// <param name="status">Task status.</param>
+    public ScheduledTask(string name, DateTime startTime, DateTime endTime, TaskStatus status = TaskStatus.Pending)
     {
         Id = Guid.NewGuid();
         Name = name;
         StartTime = startTime;
         EndTime = endTime;
+        Status = status;
     }
     
     /// <summary>

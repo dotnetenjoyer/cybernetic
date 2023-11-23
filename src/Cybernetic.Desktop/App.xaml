@@ -14,6 +14,10 @@
             <SolidColorBrush x:Key="ButtonHoverBackground" Color="#5c5c5c"/>
             <SolidColorBrush x:Key="ButtonHoverForeground" Color="#c7c7c7"/>
             <SolidColorBrush x:Key="BorderBrush" Color="#757b87"/>
+
+            <SolidColorBrush x:Key="PendingTaskBackground" Color="#c79300"/>
+            <SolidColorBrush x:Key="ErrorTaskBackground" Color="#cd0000"/>
+            <SolidColorBrush x:Key="CompletedTaskBackground" Color="#50a31d"/>
             
             <Style TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource ButtonBackground}"/> 

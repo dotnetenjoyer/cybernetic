@@ -1,6 +1,7 @@
+using MediatR;
 using Cybernetic.Domain.Entities;
 using Cybernetic.Infrastructure.Abstraction.Services;
-using MediatR;
+using TaskStatus = Cybernetic.Domain.Entities.TaskStatus;
 
 namespace Cybernetic.UseCases.Schedules.GenerateSchedule;
 
@@ -9,6 +10,8 @@ namespace Cybernetic.UseCases.Schedules.GenerateSchedule;
 /// </summary>
 public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCommand, Schedule>
 {
+    private const int MaxTaskNameLength = 10;
+    
     private readonly INameGenerator nameGenerator;
     private readonly Random random;
 
@@ -24,12 +27,9 @@ public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCo
     /// <inheritdoc />
     public Task<Schedule> Handle(GenerateScheduleCommand command, CancellationToken cancellationToken)
     {
-        var schedule = GenerateTestSchedule();
+        ValidateCommand(command);
+        var schedule = GenerateSchedule(command);
         return Task.FromResult(schedule);
-        
-        // ValidateCommand(command);
-        // var schedule = GenerateSchedule(command);
-        // return Task.FromResult(schedule);
     }
 
     private void ValidateCommand(GenerateScheduleCommand command)
@@ -48,13 +48,23 @@ public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCo
         {
             throw new ArgumentException("Invalid time period.");
         }
+
+        var scheduleDuration = command.EndTime - command.StartTime;
+        var tasksCount = scheduleDuration / command.MinTaskDuration;
+
+        if (tasksCount < command.MaxTasksCountPerLayer)
+        {
+            throw new ArgumentException("With a specified schedule duration and minimum task duration, " +
+                                        "you can't contain that many tasks.");
+        }
     }
     
     private Schedule GenerateSchedule(GenerateScheduleCommand command)
     {
         var schedule = new Schedule();
-
-        for (int i = 0; i < command.MinLayersCount; i++)
+        var numberOfLayers = random.Next(command.MinLayersCount, command.MaxLayersCount);
+        
+        for (int i = 0; i < numberOfLayers; i++)
         {
             var layer = GenerateLayer(command);
             schedule.AddLayer(layer);
@@ -68,53 +78,61 @@ public class GenerateScheduleCommandHandler : IRequestHandler<GenerateScheduleCo
         var layer = new Layer();
 
         var tasksCount = random.Next(command.MinTasksCountPerLayer, command.MaxTasksCountPerLayer);
-        var periodStartTime = command.StartTime;
-
-        for (int i = 0; i < tasksCount; i++)
+        var periods = SplitPeriodIntoSubPeriods(command.StartTime, command.EndTime, tasksCount);
+        
+        DateTime periodStarTime = periods.First().StartTime;
+        foreach (var period in periods) 
         {
-            var task = GenerateTaskInPeriod(periodStartTime, command.EndTime);
-            periodStartTime = task.EndTime;
-            
+            var task = GenerateTaskInPeriod(command.MinTaskDuration, periodStarTime, period.EndTime);
             layer.AddTask(task);
+
+            periodStarTime = task.EndTime;
         }
 
         return layer;
     }
 
-    private ScheduledTask GenerateTaskInPeriod(DateTime startTime, DateTime endTime)
+    private List<(DateTime StartTime, DateTime EndTime)> SplitPeriodIntoSubPeriods(DateTime startTime, DateTime endTime, int numberOfSubPeriods)
     {
         var periodDuration = endTime - startTime;
-        var periodDurationMinutes = (int)periodDuration.TotalMinutes;
+        var subPeriodDuration = periodDuration / numberOfSubPeriods;
 
-        var fromMinutes = random.Next(periodDurationMinutes);
-        var taskDuration = random.Next(periodDurationMinutes - fromMinutes);
+        var subPeriods = new List<(DateTime, DateTime)>();
+
+        var subPeriodStartTime = startTime;
+        for (int i = 0; i < numberOfSubPeriods; i++)
+        {
+            var subPeriodEndTime = subPeriodStartTime.Add(subPeriodDuration);
+            subPeriods.Add(new (subPeriodStartTime, subPeriodEndTime));
+
+            subPeriodStartTime = subPeriodEndTime;
+        }
+
+        return subPeriods;
+    }
+
+    private ScheduledTask GenerateTaskInPeriod(TimeSpan minDuration, DateTime startTime, DateTime endTime)
+    {
+        var periodDurationInMinutes = (int)(endTime - startTime).TotalMinutes;
+
+        var taskDuration = random.Next((int)minDuration.TotalMinutes, periodDurationInMinutes);
+        var fromMinutes = random.Next(periodDurationInMinutes - taskDuration);
 
         var taskStartTime = startTime.AddMinutes(fromMinutes);
         var taskEndTime = taskStartTime.AddMinutes(taskDuration);
 
-        var taskNameLength = random.Next(10);
-        var taskName = nameGenerator.Generate(taskNameLength);
-        
-        var task = new ScheduledTask(taskName, taskStartTime, taskEndTime);
+        var nameLength = random.Next(MaxTaskNameLength);
+        var name = nameGenerator.Generate(nameLength);
+
+        var status = RandomTaskStatus();
+
+        var task = new ScheduledTask(name, taskStartTime, taskEndTime, status);
         return task;
     }
 
-    private Schedule GenerateTestSchedule()
+    private TaskStatus RandomTaskStatus()
     {
-        var schedule = new Schedule();
-
-        var layer = new Layer();
-        schedule.AddLayer(layer);
-        
-        layer.AddTask(new ScheduledTask("First task", DateTime.Now.Date.AddDays(-2), DateTime.Now.Date.AddDays(-1)));
-        layer.AddTask(new ScheduledTask("Second task", DateTime.Now.Date.AddDays(-1), DateTime.Now.Date));
-        layer.AddTask(new ScheduledTask("Third task", DateTime.Now.Date, DateTime.Now.Date.AddDays(1)));
-
-        var layer2 = new Layer();
-        schedule.AddLayer(layer2);
-        
-        layer2.AddTask(new ScheduledTask("#1 task", DateTime.Now.AddDays(-1), DateTime.Now));
-
-        return schedule;
+        var statuses = Enum.GetValues(typeof(TaskStatus));
+        return (TaskStatus)statuses.GetValue(random.Next(statuses.Length));
     }
 }
