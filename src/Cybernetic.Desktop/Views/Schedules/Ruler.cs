@@ -1,17 +1,44 @@
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Cybernetic.Desktop.Views.Schedules;
 
-/// <summary>
-/// Schedule ruler control.
-/// </summary>
-public class Ruler : Canvas
+public class RulerControl : Canvas
 {
+    private const int LargeHashMarkHeight = 20;
+    private const int HashMarkHeight = 5;
+    private const int HashMarkWidth = 1;
+    
+    private static readonly DependencyProperty LabelProperty = DependencyProperty
+        .Register(nameof(Label), typeof(string), typeof(RulerControl));
+
     private static readonly DependencyProperty MarkupBrushProperty = DependencyProperty
-        .Register(nameof(MarkupBrush), typeof(Brush), typeof(Ruler), new PropertyMetadata(Brushes.Black));
+        .Register(nameof(MarkupBrush), typeof(Brush), 
+            typeof(RulerControl), new PropertyMetadata(Brushes.Black));
+    
+    private static readonly DependencyProperty StepWidthProperty = DependencyProperty
+        .Register(nameof(StepWidth), typeof(double), typeof(RulerControl), new PropertyMetadata(Handle));
+
+    private static void Handle(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+    {
+        var a = (RulerControl)obj;
+        a.InvalidateVisual();
+    }
+    
+    private static readonly DependencyProperty NumberOfStepsInLargeStepProperty = DependencyProperty
+        .Register(nameof(NumberOfStepsInLargeStep), typeof(int),
+            typeof(RulerControl), new PropertyMetadata(5));
+    
+    /// <summary>
+    /// Ruler label.
+    /// </summary>
+    public string Label
+    {
+        get => (string)GetValue(LabelProperty);
+        set => SetValue(LabelProperty, value);
+    }
 
     /// <summary>
     /// Ruler markup brush.
@@ -22,11 +49,8 @@ public class Ruler : Canvas
         set => SetValue(MarkupBrushProperty, value);
     }
     
-    private static readonly DependencyProperty StepWidthProperty = DependencyProperty
-        .Register(nameof(StepWidth), typeof(double), typeof(Ruler));
-
     /// <summary>
-    /// Ruler one step width.
+    /// Width of one ruler step.
     /// </summary>
     public double StepWidth
     {
@@ -34,119 +58,85 @@ public class Ruler : Canvas
         set => SetValue(StepWidthProperty, value);
     }
     
-    private static readonly DependencyProperty NumberOfStepsInLargeStepProperty = DependencyProperty
-        .Register(nameof(NumberOfStepsInLargeStep), typeof(int), typeof(Ruler));
-
     /// <summary>
-    /// Number of steps in large ruler step..
+    /// Number of steps in ruler large step.
     /// </summary>
     public int NumberOfStepsInLargeStep
     {
         get => (int)GetValue(NumberOfStepsInLargeStepProperty);
         set => SetValue(NumberOfStepsInLargeStepProperty, value);
     }
-
-    private static readonly DependencyProperty LabelProperty = DependencyProperty
-        .Register(nameof(Label), typeof(string), typeof(Ruler));
-
-    /// <summary>
-    /// Ruler label.
-    /// </summary>
-    public string Label
+    
+    /// <inheritdoc />
+    protected override void OnRender(DrawingContext drawingContext)
     {
-        get => (string)GetValue(LabelProperty);
-        set => SetValue(LabelProperty, value);
+        base.OnRender(drawingContext);
+        
+        DrawLabel(drawingContext);
+        DrawHashMarks(drawingContext);
     }
     
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public Ruler()
+    private void DrawLabel(DrawingContext drawingContext)
     {
-        Loaded += HandleLoaded;
-    }
-
-    private void HandleLoaded(object sender, RoutedEventArgs args)
-    {
-        AddRulerMarkup();
-    }
-
-    private void AddRulerMarkup()
-    {
-        Children.Clear();
-        
-        AddLabel();
-        AddHashMarks();
-    }
-
-    private void AddLabel()
-    {
-        var label = new TextBlock
+        if (string.IsNullOrEmpty(Label))
         {
-            FontSize = 14,
-            FontWeight = FontWeights.Bold,
-            Text = Label,
-            Foreground = MarkupBrush
-        };
+            return;
+        }
         
-        SetTop(label, 5);
-        SetLeft(label, 5);
-
-        Children.Add(label);        
+        var labelPosition = new Point(5, 5);
+        var labelText = CreateMarkupText(Label, 14);
+        labelText.SetFontWeight(FontWeights.DemiBold);
+        
+        drawingContext.DrawText(labelText, labelPosition);
     }
-
-    private void AddHashMarks()
+    
+    private void DrawHashMarks(DrawingContext drawingContext)
     {
         for (int i = 1; i <= CalculateNumberOfSteps(); i++)
         {
             var isLargeHashMark = i % NumberOfStepsInLargeStep == 0;
            
-            AddHashMark(i, isLargeHashMark);
-
+            DrawHashMark(drawingContext, i, isLargeHashMark);
+            
             if (isLargeHashMark)
             {
-                AddHashMarkLabel(i);
+                DrawHashMarkLabel(drawingContext, i);
             }
         }
     }
-
+    
     private int CalculateNumberOfSteps()
     {
-        return (int)(ActualWidth / StepWidth);
+        return (int)(Width / StepWidth);
     }
-
-    private void AddHashMark(int hashMarkIndex, bool isLargeHashMark)
+    
+    private void DrawHashMark(DrawingContext drawingContext, int hashMarkIndex, bool isLargeHashMark)
     {
-        const int largeHashMarkHeight = 20;
-        const int hashMarkHeight = 5;
-        
-        var hashMark = new Rectangle
+        var hashMarkHeight = isLargeHashMark ? LargeHashMarkHeight : HashMarkHeight;
+        var hashMark = new Rect
         {
-            Width = 1,
-            Height = isLargeHashMark ? largeHashMarkHeight : hashMarkHeight,
-            Stroke = MarkupBrush
+            Width = HashMarkWidth,
+            Height = hashMarkHeight,
+            X = StepWidth * hashMarkIndex,
+            Y = ActualHeight - hashMarkHeight
         };
 
-        SetLeft(hashMark, StepWidth * hashMarkIndex);
-        SetTop(hashMark, Height - hashMark.Height);
-
-        Children.Add(hashMark);
+        drawingContext.DrawRectangle(MarkupBrush, null, hashMark);
     }
 
-    private void AddHashMarkLabel(int hashMarkIndex)
+    private void DrawHashMarkLabel(DrawingContext drawingConte, int hashMarkIndex)
     {
         const int labelOffsetX = 5;
-        const int labelOffsetY = -25;
         
-        var label = new TextBlock
-        {
-            Text = hashMarkIndex.ToString(),
-            FontSize = 14,
-            Foreground = MarkupBrush
-        };
-                
-        SetLeft(label, StepWidth * hashMarkIndex + labelOffsetX);
-        SetTop(label, Height + labelOffsetY);
-        Children.Add(label);             
+        var label = CreateMarkupText(hashMarkIndex.ToString(), 12);
+        var labelPosition = new Point(StepWidth * hashMarkIndex + labelOffsetX, ActualHeight - LargeHashMarkHeight);
+        
+        drawingConte.DrawText(label, labelPosition);
+    }
+
+    private FormattedText CreateMarkupText(string text, int size)
+    {
+        return new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
+            new Typeface("Verdana"), size, MarkupBrush);
     }
 }
