@@ -8,6 +8,10 @@
             <SolidColorBrush x:Key="RulerBackground" Color="#adafb3"/>
             <SolidColorBrush x:Key="RulerMarkupBrush" Color="#363637"/>
             
+            <SolidColorBrush x:Key="GridEvenRowBackground" Color="#9ca3ad"/>
+            <SolidColorBrush x:Key="GridOddRowBackground" Color="#a8b2bf"/>
+            <SolidColorBrush x:Key="GridColumnSeparatorBackground" Color="#898f96"/>
+            
             <SolidColorBrush x:Key="RibbonBackground" Color="#bdc1c7"/>
             
             <SolidColorBrush x:Key="ButtonBackground" Color="#848b99"/>
@@ -51,7 +55,9 @@
             <Style TargetType="TextBlock">
                 <Setter Property="TextWrapping" Value="NoWrap"/>
                 <Setter Property="TextTrimming" Value="WordEllipsis"/>
+                <Setter Property="FontFamily" Value="Verdana"/>
             </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

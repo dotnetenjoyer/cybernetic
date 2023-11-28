@@ -50,9 +50,9 @@ public class ScheduleViewModel : BaseViewModel
         var generateCommand = new GenerateScheduleCommand
         {
             MinLayersCount = 5,
-            MaxLayersCount = 10,
-            MinTasksCountPerLayer = 100,
-            MaxTasksCountPerLayer = 1000,
+            MaxLayersCount = 15,
+            MinTasksCountPerLayer = 400,
+            MaxTasksCountPerLayer = 400,
             StartTime = DateTime.Now.Date.AddDays(-30),
             EndTime = DateTime.Now.AddDays(30)
         };

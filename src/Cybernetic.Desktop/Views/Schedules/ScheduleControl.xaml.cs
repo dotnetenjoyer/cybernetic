@@ -8,4 +8,12 @@ public partial class ScheduleControl : UserControl
     {
         InitializeComponent();
     }
+
+    private void ScheduleScroll_OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (sender == ScheduleScroll)
+        {
+            RulerScroll.ScrollToHorizontalOffset(e.HorizontalOffset);
+        }
+    }
 }

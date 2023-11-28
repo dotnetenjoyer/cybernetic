@@ -5,31 +5,28 @@ using System.Windows.Media;
 
 namespace Cybernetic.Desktop.Views.Schedules;
 
-public class RulerControl : Canvas
+/// <summary>
+/// Ruler control.
+/// </summary>
+public class Ruler : Canvas
 {
     private const int LargeHashMarkHeight = 20;
     private const int HashMarkHeight = 5;
     private const int HashMarkWidth = 1;
     
     private static readonly DependencyProperty LabelProperty = DependencyProperty
-        .Register(nameof(Label), typeof(string), typeof(RulerControl));
+        .Register(nameof(Label), typeof(string), typeof(Ruler));
 
     private static readonly DependencyProperty MarkupBrushProperty = DependencyProperty
         .Register(nameof(MarkupBrush), typeof(Brush), 
-            typeof(RulerControl), new PropertyMetadata(Brushes.Black));
+            typeof(Ruler), new PropertyMetadata(Brushes.Black));
     
     private static readonly DependencyProperty StepWidthProperty = DependencyProperty
-        .Register(nameof(StepWidth), typeof(double), typeof(RulerControl), new PropertyMetadata(Handle));
+        .Register(nameof(StepWidth), typeof(double), typeof(Ruler));
 
-    private static void Handle(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-    {
-        var a = (RulerControl)obj;
-        a.InvalidateVisual();
-    }
-    
     private static readonly DependencyProperty NumberOfStepsInLargeStepProperty = DependencyProperty
         .Register(nameof(NumberOfStepsInLargeStep), typeof(int),
-            typeof(RulerControl), new PropertyMetadata(5));
+            typeof(Ruler), new PropertyMetadata(5));
     
     /// <summary>
     /// Ruler label.

@@ -4,7 +4,10 @@ using System.Windows.Media;
 
 namespace Cybernetic.Desktop.Views.Schedules;
 
-public class SGrid : IDrawable
+/// <summary>
+/// The class that draws schedule grid.
+/// </summary>
+public class ScheduleGrid : IDrawable
 {
     private readonly double height;
     private readonly double width;
@@ -12,13 +15,22 @@ public class SGrid : IDrawable
     private readonly double rowHeight;
     private readonly double columnWidth;
 
-    private readonly Brush firstRowBrush;
-    private readonly Brush secondRowBrush;
-
+    private readonly Brush oddRowBrush;
+    private readonly Brush evenRowBrush;
     private readonly Brush columnBrush;
 
-    public SGrid(double height, double width, double rowHeight, double columnWidth,
-        Brush firstRowBrush, Brush secondRowBrush, Brush columnBrush)
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="width">Grid width.</param>
+    /// <param name="height">Grid height.</param>
+    /// <param name="columnWidth">Grid column width.</param>
+    /// <param name="rowHeight">Grid row height.</param>
+    /// <param name="evenRowBrush">Brush of event rows.</param>
+    /// <param name="oddRowBrush">Brush of odd rows.</param>
+    /// <param name="columnBrush">Brush of the column separator.</param>
+    public ScheduleGrid(double width, double height, double columnWidth, double rowHeight, 
+        Brush evenRowBrush, Brush oddRowBrush, Brush columnBrush)
     {
         this.height = height;
         this.width = width;
@@ -26,11 +38,12 @@ public class SGrid : IDrawable
         this.rowHeight = rowHeight;
         this.columnWidth = columnWidth;
 
-        this.firstRowBrush = firstRowBrush;
-        this.secondRowBrush = secondRowBrush;
+        this.oddRowBrush = oddRowBrush;
+        this.evenRowBrush = evenRowBrush;
         this.columnBrush = columnBrush;
     }
     
+    /// <inheritdoc />
     public void Draw(DrawingContext context)
     {
         DrawRows(context);
@@ -41,7 +54,8 @@ public class SGrid : IDrawable
     {
         for (int i = 0; i < CalculateNumberOfRows(); i++)
         {
-            var brush = i % 2 == 0 ? secondRowBrush : firstRowBrush; 
+            var isEven = i % 2 == 0;
+            var brush = isEven ? evenRowBrush : oddRowBrush; 
 
             var row = new Rect
             {
@@ -77,5 +91,70 @@ public class SGrid : IDrawable
     private int CalculateNumberOfColumns()
     {
         return (int)(width / columnWidth);
+    }
+}
+
+public class ScheduleGridBuilder
+{
+    private double width;
+    private double height;
+
+    private double columnWidth;
+    private double rowHeight;
+    
+    private Brush oddRowBrush;
+    private Brush evenRowBrush;
+    private Brush columnBrush;
+    
+    /// <summary>
+    /// Configure schedule grid size.
+    /// </summary>
+    /// <param name="width">Width.</param>
+    /// <param name="height">Height.</param>
+    public ScheduleGridBuilder HasSize(double width, double height)
+    {
+        if (width <= 0)
+        {
+            throw new ArgumentException("The width of the ruler must be greater than zero");
+        }
+
+        if (height <= 0)
+        {
+            throw new ArgumentException("The height of the ruler must be greater than zero");
+        }
+        
+        this.width = width;
+        this.height = height;
+        
+        return this;
+    }
+
+    public ScheduleGridBuilder W(double columnWidth, double rowHeight)
+    {
+        this.columnWidth = columnWidth;
+        this.rowHeight = rowHeight;
+
+        return this;
+    }
+    
+    public ScheduleGridBuilder HasRowBrushes(Brush evenRowBrush, Brush oddRowBrush)
+    {
+        this.evenRowBrush = evenRowBrush;
+        this.oddRowBrush = oddRowBrush;
+
+        return this;
+    }
+
+    public ScheduleGridBuilder HasColumnBrush(Brush columnBrush)
+    {
+        this.columnBrush = columnBrush;
+        
+        return this;
+    }
+    
+    public ScheduleGrid Build()
+    {
+        return new ScheduleGrid(width, height, columnWidth, rowHeight, 
+            evenRowBrush, oddRowBrush, columnBrush);
     }
 }

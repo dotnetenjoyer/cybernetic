@@ -9,20 +9,42 @@
     d:DataContext="{d:DesignInstance Type=vm:ScheduleViewModel}"
     mc:Ignorable="d">
     <Grid Background="{StaticResource RulerBackground}">
-        <ScrollViewer 
-            HorizontalAlignment="Stretch"
-            HorizontalScrollBarVisibility="Auto"
-            VerticalScrollBarVisibility="Auto"
-            VerticalAlignment="Stretch">
-            <local:CyberneticSchedule Schedule="{Binding Schedule}"/>
-        </ScrollViewer>
-        
-        <local:ScheduleRibbon 
-            Grid.ZIndex="1" 
-            Height="25" 
-            Schedule="{Binding Schedule}"
-            GenerateScheduleCommand="{Binding GenerateScheduleCommand}"
-            VerticalAlignment="Top" 
-            Margin="0 50 0 0"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer 
+                x:Name="RulerScroll"
+                VerticalScrollBarVisibility="Disabled"
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalAlignment="Stretch"
+                Background="{StaticResource RulerBackground}">
+                <local:Ruler 
+                    Label="{Binding Schedule.StartTime}"
+                    Width="{Binding Path=Width, ElementName=CyberneticSchedule}"
+                    StepWidth="{Binding Path=OneHourWidth, ElementName=CyberneticSchedule}"
+                    MarkupBrush="{StaticResource RulerMarkupBrush}"/>            
+            </ScrollViewer>
+            
+            <local:ScheduleRibbon 
+                Grid.Row="1"
+                Schedule="{Binding Schedule}"
+                GenerateScheduleCommand="{Binding GenerateScheduleCommand}"/>
+            
+            <ScrollViewer 
+                x:Name="ScheduleScroll"
+                Grid.Row="2"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalAlignment="Stretch"
+                VerticalScrollBarVisibility="Auto"
+                ScrollChanged="ScheduleScroll_OnScrollChanged">
+                <local:CyberneticSchedule 
+                    x:Name="CyberneticSchedule"
+                    Schedule="{Binding Schedule}"/>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>
