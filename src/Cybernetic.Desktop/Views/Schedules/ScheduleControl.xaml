@@ -5,9 +5,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Cybernetic.Desktop.Views.Schedules"
+    xmlns:system="clr-namespace:System"
+    xmlns:calcBinding="clr-namespace:CalcBinding;assembly=CalcBinding"
     xmlns:vm="clr-namespace:Cybernetic.Desktop.MVVM.ViewModels;assembly=Cybernetic.Desktop.MVVM"
     d:DataContext="{d:DesignInstance Type=vm:ScheduleViewModel}"
     mc:Ignorable="d">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <system:Double x:Key="ScheduleGridRowHeight">25</system:Double>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Grid Background="{StaticResource RulerBackground}">
         <Grid>
             <Grid.RowDefinitions>
@@ -35,15 +44,30 @@
                 GenerateScheduleCommand="{Binding GenerateScheduleCommand}"/>
             
             <ScrollViewer 
-                x:Name="ScheduleScroll"
                 Grid.Row="2"
                 HorizontalScrollBarVisibility="Auto"
                 VerticalAlignment="Stretch"
                 VerticalScrollBarVisibility="Auto"
-                ScrollChanged="ScheduleScroll_OnScrollChanged">
-                <local:CyberneticSchedule 
-                    x:Name="CyberneticSchedule"
-                    Schedule="{Binding Schedule}"/>
+                ScrollChanged="HandelScheduleScrollChange">
+                <Grid>
+                    <local:ScheduleGrid
+                        EvenRowBrush="{StaticResource GridEvenRowBackground}"
+                        OddRowBrush="{StaticResource GridOddRowBackground}"
+                        ColumnSeparatorBrush="{StaticResource GridColumnSeparatorBackground}"
+                        RowHeight="{StaticResource ScheduleGridRowHeight}"
+                        ColumnWidth="{calcBinding:Binding Path=OneHourWidth*5, ElementName=CyberneticSchedule}"
+                        Width="{Binding Path=Width, ElementName=CyberneticSchedule}"
+                        Height="{Binding Path=Height, ElementName=CyberneticSchedule}"
+                        MinHeight="{Binding Path=MinHeight, ElementName=CyberneticSchedule}"/>
+
+                    <local:CyberneticSchedule 
+                        x:Name="CyberneticSchedule"
+                        Schedule="{Binding Schedule}"
+                        GridRowHeight="{StaticResource ScheduleGridRowHeight}"
+                        CompletedTaskBackground="{StaticResource CompletedTaskBackground}"
+                        ErrorTaskBackground="{StaticResource ErrorTaskBackground}"
+                        PendingTaskBackground="{StaticResource PendingTaskBackground}"/>
+                </Grid>
             </ScrollViewer>
         </Grid>
     </Grid>

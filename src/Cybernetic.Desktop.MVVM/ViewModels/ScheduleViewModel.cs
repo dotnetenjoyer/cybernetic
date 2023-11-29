@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Input;
 using Cybernetic.Domain.Entities;
 using Cybernetic.UseCases.Schedules.GenerateSchedule;
@@ -50,9 +51,9 @@ public class ScheduleViewModel : BaseViewModel
         var generateCommand = new GenerateScheduleCommand
         {
             MinLayersCount = 5,
-            MaxLayersCount = 15,
-            MinTasksCountPerLayer = 400,
-            MaxTasksCountPerLayer = 400,
+            MaxLayersCount = 5,
+            MinTasksCountPerLayer = 1000,
+            MaxTasksCountPerLayer = 1000,
             StartTime = DateTime.Now.Date.AddDays(-30),
             EndTime = DateTime.Now.AddDays(30)
         };
