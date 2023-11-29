@@ -12,5 +12,6 @@ public partial class ScheduleControl : UserControl
     private void HandelScheduleScrollChange(object sender, ScrollChangedEventArgs eventArgs)
     {
         RulerScroll.ScrollToHorizontalOffset(eventArgs.HorizontalOffset);
+        PresentLineScroll.ScrollToHorizontalOffset(eventArgs.HorizontalOffset);
     }
 }

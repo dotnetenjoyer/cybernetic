@@ -1,9 +1,8 @@
-using System.Diagnostics;
 using System.Windows.Input;
+using Microsoft.Toolkit.Mvvm.Input;
+using MediatR;
 using Cybernetic.Domain.Entities;
 using Cybernetic.UseCases.Schedules.GenerateSchedule;
-using MediatR;
-using Microsoft.Toolkit.Mvvm.Input;
 
 namespace Cybernetic.Desktop.MVVM.ViewModels;
 
@@ -50,10 +49,10 @@ public class ScheduleViewModel : BaseViewModel
     {
         var generateCommand = new GenerateScheduleCommand
         {
-            MinLayersCount = 5,
-            MaxLayersCount = 5,
-            MinTasksCountPerLayer = 1000,
-            MaxTasksCountPerLayer = 1000,
+            MinLayersCount = 15,
+            MaxLayersCount = 15,
+            MinTasksCountPerLayer = 200,
+            MaxTasksCountPerLayer = 200,
             StartTime = DateTime.Now.Date.AddDays(-30),
             EndTime = DateTime.Now.AddDays(30)
         };

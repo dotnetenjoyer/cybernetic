@@ -32,7 +32,7 @@
                 VerticalAlignment="Stretch"
                 Background="{StaticResource RulerBackground}">
                 <local:Ruler 
-                    Label="{Binding Schedule.StartTime}"
+                    Label="{Binding Schedule.StartTime, StringFormat='dddd, dd MMMM yyyy HH:mm'}"
                     Width="{Binding Path=Width, ElementName=CyberneticSchedule}"
                     StepWidth="{Binding Path=OneHourWidth, ElementName=CyberneticSchedule}"
                     MarkupBrush="{StaticResource RulerMarkupBrush}"/>            
@@ -55,7 +55,7 @@
                         OddRowBrush="{StaticResource GridOddRowBackground}"
                         ColumnSeparatorBrush="{StaticResource GridColumnSeparatorBackground}"
                         RowHeight="{StaticResource ScheduleGridRowHeight}"
-                        ColumnWidth="{calcBinding:Binding Path=OneHourWidth*5, ElementName=CyberneticSchedule}"
+                        ColumnWidth="{calcBinding:Binding Path='OneHourWidth * 5', ElementName=CyberneticSchedule}"
                         Width="{Binding Path=Width, ElementName=CyberneticSchedule}"
                         Height="{Binding Path=Height, ElementName=CyberneticSchedule}"
                         MinHeight="{Binding Path=MinHeight, ElementName=CyberneticSchedule}"/>
@@ -70,5 +70,21 @@
                 </Grid>
             </ScrollViewer>
         </Grid>
+        
+        <ScrollViewer 
+            x:Name="PresentLineScroll"
+            VerticalScrollBarVisibility="Disabled"
+            HorizontalScrollBarVisibility="Hidden"
+            VerticalAlignment="Top"
+            Height="{calcBinding:Binding Path='ActualHeight - 15', Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}"
+            IsHitTestVisible="False">
+            <local:SchedulePresentLine
+                VerticalAlignment="Stretch"
+                ScheduleStartTime="{Binding Path=Schedule.StartTime}"
+                ScaleFactor="{Binding Path=ScaleFactor, ElementName=CyberneticSchedule}"
+                Width="{Binding Path=Width, ElementName=CyberneticSchedule}"
+                LineBackground="{StaticResource PresentLineBackground}"
+                LinePen="{StaticResource PresentLinePen}"/>
+        </ScrollViewer>
     </Grid>
 </UserControl>

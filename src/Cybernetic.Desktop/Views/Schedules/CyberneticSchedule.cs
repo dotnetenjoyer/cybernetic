@@ -40,6 +40,9 @@ public class CyberneticSchedule : Canvas
     private static readonly DependencyProperty GridRowHeightProperty = DependencyProperty
         .Register(nameof(GridRowHeight), typeof(double), typeof(CyberneticSchedule));
     
+    private static readonly DependencyProperty ScaleFactorProperty = DependencyProperty
+        .Register(nameof(ScaleFactor), typeof(double), typeof(CyberneticSchedule));
+    
     private static readonly DependencyProperty CompletedTaskBackgroundProperty = DependencyProperty
         .Register(nameof(CompletedTaskBackground), typeof(Brush), typeof(CyberneticSchedule));
     
@@ -50,8 +53,6 @@ public class CyberneticSchedule : Canvas
         .Register(nameof(PendingTaskBackground), typeof(Brush), typeof(CyberneticSchedule));
 
     #endregion
-    
-    private double scaleFactor = 1;
     
     /// <summary>
     /// Width of one hour on the schedule diagram.
@@ -99,6 +100,15 @@ public class CyberneticSchedule : Canvas
     }
 
     /// <summary>
+    /// Scale factor.
+    /// </summary>
+    public double ScaleFactor
+    {
+        get => (double)GetValue(ScaleFactorProperty);
+        set => SetValue(ScaleFactorProperty, value);
+    }
+    
+    /// <summary>
     /// Completed task background brush.
     /// </summary>
     public Brush CompletedTaskBackground
@@ -135,17 +145,17 @@ public class CyberneticSchedule : Canvas
         CalculateScaleFactor();
         CalculateScheduleSize();
 
-        OneHourWidth = TimeSpan.FromHours(1).Ticks * scaleFactor;
+        OneHourWidth = TimeSpan.FromHours(1).Ticks * ScaleFactor;
     }
 
     private void CalculateScaleFactor()
     {
-        scaleFactor = ShortestTaskWidth / Schedule.ShortestTaskDuration.Value.Ticks;
+        ScaleFactor = ShortestTaskWidth / Schedule.ShortestTaskDuration.Value.Ticks;
     }
 
     private void CalculateScheduleSize()
     {
-        Width = Schedule.Duration.Value.Ticks * scaleFactor;
+        Width = Schedule.Duration.Value.Ticks * ScaleFactor;
         MinHeight = Schedule.Layers.Count * GridRowHeight;
     }
 
@@ -185,9 +195,9 @@ public class CyberneticSchedule : Canvas
         
         var taskElement = new Rect
         {
-            Width = (task.EndTime - task.StartTime).Ticks * scaleFactor,
+            Width = (task.EndTime - task.StartTime).Ticks * ScaleFactor,
             Height = TaskHeight,
-            X = (task.StartTime - Schedule.StartTime.Value).Ticks * scaleFactor,
+            X = (task.StartTime - Schedule.StartTime.Value).Ticks * ScaleFactor,
             Y = GridRowHeight * layerIndex + taskElementOffset
         };
 

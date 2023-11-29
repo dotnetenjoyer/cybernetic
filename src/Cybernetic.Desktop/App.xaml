@@ -22,6 +22,9 @@
             <SolidColorBrush x:Key="PendingTaskBackground" Color="#c79300"/>
             <SolidColorBrush x:Key="ErrorTaskBackground" Color="#cd0000"/>
             <SolidColorBrush x:Key="CompletedTaskBackground" Color="#50a31d"/>
+
+            <SolidColorBrush x:Key="PresentLineBackground" Color="#e3e24d"/>
+            <Pen x:Key="PresentLinePen" Brush="Black" Thickness="1"/>
             
             <Style TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource ButtonBackground}"/> 

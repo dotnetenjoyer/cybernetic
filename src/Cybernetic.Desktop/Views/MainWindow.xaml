@@ -9,7 +9,8 @@
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     mc:Ignorable="d"
     Title="Cybernetic" 
-    Height="300" Width="800">
+    ResizeMode="NoResize"
+    Height="300" Width="900">
     <Grid>
         <schedules:ScheduleControl DataContext="{Binding ScheduleViewModel}"/>
     </Grid>

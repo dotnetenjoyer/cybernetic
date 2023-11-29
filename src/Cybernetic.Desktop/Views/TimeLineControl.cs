@@ -1,1 +1,0 @@
-namespace Cybernetic.Desktop.Views;
